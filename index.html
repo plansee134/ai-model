@@ -2,165 +2,120 @@
 <html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PlanSee - AI Interior Design Studio</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { box-sizing: border-box; font-family: 'Inter', sans-serif; }
-    .hero-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); }
-    .floating-animation { animation: float 6s ease-in-out infinite; }
-    @keyframes float { 0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)} }
-    .pulse-ring { animation: pulse-ring 2s ease-in-out infinite; }
-    @keyframes pulse-ring {0%{transform:scale(.8);opacity:1}80%,100%{transform:scale(1.2);opacity:0}}
+    body { font-family: 'Inter', sans-serif; }
+    .hero-gradient { background: linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%); }
+    .glass { background: rgba(255,255,255,0.15); backdrop-filter: blur(20px); }
+    .card-hover { transition: all 0.4s; }
+    .card-hover:hover { transform: translateY(-6px) scale(1.01); box-shadow:0 20px 40px rgba(0,0,0,.15);}
+    .floating { animation: float 6s ease-in-out infinite; }
+    @keyframes float {0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+    .pulse-ring { animation:pulse 1.5s infinite; }
+    @keyframes pulse {0%{transform:scale(.9);opacity:1;}100%{transform:scale(1.4);opacity:0;} }
   </style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 min-h-screen">
-  <!-- Hero -->
-  <header class="hero-gradient relative overflow-hidden">
-    <div class="absolute inset-0 bg-black bg-opacity-20"></div>
-    <div class="relative z-10 container mx-auto px-6 py-12 text-center">
-      <h1 class="text-5xl md:text-6xl font-black text-white mb-6">PlanSee</h1>
-      <p class="text-xl md:text-2xl text-white text-opacity-90">AI Interior Design Studio</p>
-    </div>
+
+  <!-- Hero Section -->
+  <header class="hero-gradient text-center text-white py-20 relative">
+    <h1 class="text-6xl font-black mb-4">PlanSee</h1>
+    <p class="text-2xl opacity-90">AI Interior Design Studio</p>
+    <div class="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-slate-50 to-transparent"></div>
   </header>
 
-  <div class="container mx-auto px-6 -mt-16 relative z-20">
-    <!-- Step Indicators -->
-    <div class="mb-12">
-      <div class="bg-white rounded-3xl shadow-2xl p-8 flex items-center justify-between">
-        <div class="text-center">
-          <div id="step1-indicator" class="w-12 h-12 bg-purple-600 text-white rounded-xl flex items-center justify-center mx-auto">1</div>
-          <p class="text-sm mt-2">Client Interview</p>
+  <main class="container mx-auto px-6 -mt-12 relative z-20">
+    <!-- Stepper -->
+    <div class="bg-white rounded-3xl shadow-2xl p-6 mb-12 flex items-center justify-around">
+      <div id="stepper" class="flex space-x-12">
+        <div class="text-center" id="s1">
+          <div class="w-12 h-12 bg-purple-600 text-white rounded-xl flex items-center justify-center mx-auto mb-2">1</div>
+          <p class="text-sm">Interview</p>
         </div>
-        <div class="flex-1 h-1 bg-gray-200 mx-4"><div id="progress1" class="h-1 bg-purple-600 w-0"></div></div>
-        <div class="text-center">
-          <div id="step2-indicator" class="w-12 h-12 bg-gray-200 text-gray-400 rounded-xl flex items-center justify-center mx-auto">2</div>
-          <p class="text-sm mt-2">Space Survey</p>
+        <div class="text-center" id="s2">
+          <div class="w-12 h-12 bg-gray-300 text-white rounded-xl flex items-center justify-center mx-auto mb-2">2</div>
+          <p class="text-sm">Survey</p>
         </div>
-        <div class="flex-1 h-1 bg-gray-200 mx-4"><div id="progress2" class="h-1 bg-purple-600 w-0"></div></div>
-        <div class="text-center">
-          <div id="step3-indicator" class="w-12 h-12 bg-gray-200 text-gray-400 rounded-xl flex items-center justify-center mx-auto">3</div>
-          <p class="text-sm mt-2">AI Designs</p>
+        <div class="text-center" id="s3">
+          <div class="w-12 h-12 bg-gray-300 text-white rounded-xl flex items-center justify-center mx-auto mb-2">3</div>
+          <p class="text-sm">Proposals</p>
         </div>
       </div>
     </div>
 
     <!-- Step 1 -->
-    <div id="step1" class="bg-white rounded-3xl shadow-2xl p-8 mb-12">
-      <h2 class="text-3xl font-bold mb-6">Client Consultation</h2>
+    <section id="step1" class="bg-white rounded-3xl shadow-2xl p-10 mb-12">
+      <h2 class="text-3xl font-bold mb-6 text-center">Client Consultation</h2>
       <div class="text-center">
-        <button id="recordButton" onclick="toggleRecording()" class="bg-red-600 text-white px-8 py-4 rounded-xl">Start Recording</button>
-        <div id="recordingTimer" class="hidden mt-6 text-2xl font-bold text-red-600">00:00</div>
-        <div id="recordingComplete" class="hidden mt-6 text-green-600">✅ Recording Completed (<span id="finalDuration"></span>)</div>
+        <button onclick="nextStep(1)" class="bg-gradient-to-r from-red-500 to-red-600 text-white px-8 py-4 rounded-xl font-bold">🎤 Start Interview</button>
       </div>
-      <div class="text-center mt-10">
-        <button id="nextStepButton" onclick="nextStep()" disabled class="bg-purple-600 text-white px-8 py-4 rounded-xl">Continue</button>
-      </div>
-    </div>
+    </section>
 
     <!-- Step 2 -->
-    <div id="step2" class="hidden bg-white rounded-3xl shadow-2xl p-8 mb-12">
-      <h2 class="text-3xl font-bold mb-6">Space Survey & Upload</h2>
-      <div class="text-center mb-6">
-        <input type="file" id="fileInput" class="hidden" multiple>
-        <button onclick="document.getElementById('fileInput').click()" class="bg-blue-600 text-white px-8 py-4 rounded-xl">Upload Files</button>
-        <div id="uploadedFiles" class="hidden mt-6 text-green-600">
-          ✅ Files Uploaded
-          <div id="filesList" class="mt-4 text-left"></div>
-        </div>
-      </div>
+    <section id="step2" class="bg-white rounded-3xl shadow-2xl p-10 mb-12 hidden">
+      <h2 class="text-3xl font-bold mb-6 text-center">Upload As-Built / Measurements</h2>
       <div class="text-center">
-        <button onclick="generateProposals()" class="bg-purple-600 text-white px-8 py-4 rounded-xl">Generate AI Designs</button>
+        <input type="file" id="fileUpload" class="hidden" multiple>
+        <button onclick="document.getElementById('fileUpload').click()" class="bg-blue-600 text-white px-8 py-4 rounded-xl font-bold">📂 Upload Files</button>
+        <div id="uploadedList" class="mt-6 text-gray-600"></div>
+        <button onclick="nextStep(2)" class="mt-8 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl font-bold">Continue</button>
       </div>
-    </div>
+    </section>
 
     <!-- Step 3 -->
-    <div id="step3" class="hidden">
-      <div id="loadingState" class="bg-white rounded-3xl shadow-2xl p-8 text-center">
-        <p class="text-xl text-gray-600">⏳ Generating AI proposals...</p>
-      </div>
-      <div id="proposalsDisplay" class="hidden bg-white rounded-3xl shadow-2xl p-8">
-        <h2 class="text-3xl font-bold mb-6">Your AI Design Proposals</h2>
-        <div class="grid md:grid-cols-2 gap-6" id="proposalsGrid"></div>
-      </div>
-    </div>
-  </div>
+    <section id="step3" class="bg-white rounded-3xl shadow-2xl p-10 mb-12 hidden">
+      <h2 class="text-3xl font-bold mb-6 text-center">AI Generated Proposals</h2>
+      <div id="loading" class="text-center text-gray-500">⏳ Generating designs...</div>
+      <div id="proposals" class="grid md:grid-cols-2 gap-6 hidden mt-6"></div>
+    </section>
+  </main>
 
   <script>
-    const WEBHOOK_URL = "https://plansee.app.n8n.cloud/webhook/958b5b14-1f45-4701-839e-16f392138f8d"; 
-    let currentStep = 1, isRecording = false, recordingStartTime, recordingTimer, recordingDuration=0;
+    let currentStep = 1;
 
-    async function sendToWebhook(step, data){
-      try {
-        await fetch(WEBHOOK_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({step,timestamp:new Date().toISOString(),data})});
-        console.log("Sent:", step, data);
-      } catch(e){console.error(e);}
-    }
-
-    function toggleRecording(){ isRecording?stopRecording():startRecording(); }
-    function startRecording(){
-      isRecording=true;recordingStartTime=Date.now();
-      document.getElementById('recordButton').textContent="Stop Recording";
-      document.getElementById('recordingTimer').classList.remove('hidden');
-      recordingTimer=setInterval(updateTimer,1000);
-    }
-    function stopRecording(){
-      isRecording=false;recordingDuration=Math.floor((Date.now()-recordingStartTime)/1000);
-      clearInterval(recordingTimer);
-      document.getElementById('recordButton').classList.add('hidden');
-      document.getElementById('recordingTimer').classList.add('hidden');
-      document.getElementById('recordingComplete').classList.remove('hidden');
-      document.getElementById('finalDuration').textContent=recordingDuration+"s";
-      document.getElementById('nextStepButton').disabled=false;
-      sendToWebhook("client_interview",{duration:recordingDuration});
-    }
-    function updateTimer(){
-      const elapsed=Math.floor((Date.now()-recordingStartTime)/1000);
-      document.getElementById('recordingTimer').textContent=`${String(Math.floor(elapsed/60)).padStart(2,"0")}:${String(elapsed%60).padStart(2,"0")}`;
-    }
-
-    function nextStep(){
-      document.getElementById(`step${currentStep}`).classList.add('hidden');
-      document.getElementById(`progress${currentStep}`).style.width="100%";
-      document.getElementById(`step${currentStep}-indicator`).classList.add("bg-green-500");
+    function nextStep(step) {
+      document.getElementById(`step${step}`).classList.add('hidden');
+      document.getElementById(`s${step}`).children[0].classList.remove('bg-purple-600');
+      document.getElementById(`s${step}`).children[0].classList.add('bg-green-500');
       currentStep++;
       document.getElementById(`step${currentStep}`).classList.remove('hidden');
-      document.getElementById(`step${currentStep}-indicator`).classList.remove("bg-gray-200","text-gray-400");
-      document.getElementById(`step${currentStep}-indicator`).classList.add("bg-purple-600","text-white");
+
+      if (currentStep === 3) {
+        generateProposals();
+      }
     }
 
-    document.getElementById('fileInput').addEventListener('change',e=>{
-      const files=Array.from(e.target.files).map(f=>({name:f.name,sizeMB:(f.size/1024/1024).toFixed(2)}));
-      document.getElementById('uploadedFiles').classList.remove('hidden');
-      document.getElementById('filesList').innerHTML=files.map(f=>`<p>${f.name} (${f.sizeMB} MB)</p>`).join("");
-      sendToWebhook("space_survey",{uploadedFiles:files});
+    document.getElementById('fileUpload').addEventListener('change', function(e){
+      let list = document.getElementById('uploadedList');
+      list.innerHTML = '';
+      [...e.target.files].forEach(f => {
+        list.innerHTML += `<p>✅ ${f.name} (${(f.size/1024/1024).toFixed(1)} MB)</p>`;
+      });
     });
 
     function generateProposals(){
-      nextStep();
-      document.getElementById('loadingState').classList.remove('hidden');
-      document.getElementById('proposalsDisplay').classList.add('hidden');
-      setTimeout(showProposals,3000);
-    }
-
-    function showProposals(){
-      document.getElementById('loadingState').classList.add('hidden');
-      document.getElementById('proposalsDisplay').classList.remove('hidden');
-      const grid=document.getElementById('proposalsGrid');grid.innerHTML="";
-      const designs=["Modern Minimalist","Scandinavian Comfort","Industrial Chic","Luxury Contemporary"];
-      designs.forEach((title,i)=>{
-        const card=document.createElement("div");
-        card.className="p-6 border rounded-xl shadow text-center";
-        card.innerHTML=`<h3 class="font-bold mb-2">${title}</h3>
-          <button onclick="selectProposal(${i+1})" class="bg-purple-600 text-white px-4 py-2 rounded">Select</button>`;
-        grid.appendChild(card);
-      });
-      sendToWebhook("ai_proposals",{status:"generated",count:4});
-    }
-
-    function selectProposal(i){
-      alert("Selected Design "+i);
-      sendToWebhook("proposal_selected",{chosenDesign:i});
+      setTimeout(()=>{
+        document.getElementById('loading').classList.add('hidden');
+        const proposals = document.getElementById('proposals');
+        proposals.classList.remove('hidden');
+        const designs = [
+          {title:"Modern Minimalist",desc:"Neutral tones, clean lines"},
+          {title:"Scandinavian Comfort",desc:"Warm wood + cozy textures"},
+          {title:"Industrial Chic",desc:"Raw materials, urban vibe"},
+          {title:"Luxury Contemporary",desc:"Premium finishes, glamorous look"}
+        ];
+        proposals.innerHTML = '';
+        designs.forEach((d,i)=>{
+          proposals.innerHTML += `
+            <div class="card-hover p-6 border rounded-2xl">
+              <h3 class="font-bold text-xl mb-2">${d.title}</h3>
+              <p class="text-gray-600 mb-4">${d.desc}</p>
+              <button onclick="alert('Selected ${d.title}')" class="bg-purple-600 text-white px-4 py-2 rounded-lg">Select</button>
+            </div>`;
+        });
+      },3000);
     }
   </script>
 </body>
