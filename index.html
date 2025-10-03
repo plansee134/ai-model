@@ -15,7 +15,9 @@
       --grad-b:#764ba2;
       --grad-c:#f093fb;
     }
-    html,body{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';}
+    html,body{
+      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';
+    }
     .hero-gradient{background:linear-gradient(135deg,var(--grad-a) 0%,var(--grad-b) 55%,var(--grad-c) 100%);}
     .glass{background:rgba(255,255,255,.12);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.2);}
     .card-hover{transition:transform .35s cubic-bezier(.4,0,.2,1), box-shadow .35s;}
@@ -30,6 +32,7 @@
     @keyframes bdot{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
     .shimmer{background:linear-gradient(90deg,#f3f4f6 25%,#e5e7eb 50%,#f3f4f6 75%);background-size:200% 100%;animation:shim 1.8s linear infinite}
     @keyframes shim{0%{background-position:-200% 0}100%{background-position:200% 0}}
+    .badge{font-size:.75rem;padding:.15rem .5rem;border-radius:.6rem}
   </style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 min-h-screen">
@@ -88,7 +91,7 @@
       </div>
     </section>
 
-    <!-- STEP 1 -->
+    <!-- STEP 1 (Interview / Audio Recording + Meta) -->
     <section id="step-1" class="mb-12">
       <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
         <div class="bg-gradient-to-r from-purple-600 via-pink-600 to-red-500 p-8 text-white text-center">
@@ -96,8 +99,28 @@
         </div>
 
         <div class="p-8 md:p-12">
-          <div class="max-w-4xl mx-auto">
-            <div class="bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100 rounded-3xl p-10 mb-8">
+          <div class="max-w-4xl mx-auto space-y-8">
+            <!-- Client Meta -->
+            <div class="bg-gradient-to-br from-slate-50 to-white border border-slate-200 rounded-3xl p-6">
+              <h4 class="text-xl font-bold text-slate-800 mb-5">Client & Project Info</h4>
+              <div class="grid md:grid-cols-3 gap-4">
+                <div>
+                  <label class="block font-semibold text-gray-700 mb-2">Client Name</label>
+                  <input id="meta-name" type="text" placeholder="e.g. Ahmed Abbas" class="w-full p-3 rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white" />
+                </div>
+                <div>
+                  <label class="block font-semibold text-gray-700 mb-2">Contact (email/phone)</label>
+                  <input id="meta-contact" type="text" placeholder="e.g. ahmed@domain.com" class="w-full p-3 rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white" />
+                </div>
+                <div>
+                  <label class="block font-semibold text-gray-700 mb-2">Project ID</label>
+                  <input id="meta-project" type="text" placeholder="e.g. PS-2025-001" class="w-full p-3 rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Recorder -->
+            <div class="bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100 rounded-3xl p-10">
               <div class="text-center space-y-8">
                 <div class="relative inline-block">
                   <div class="w-32 h-32 rounded-full shadow-2xl flex items-center justify-center bg-gradient-to-br from-purple-600 to-pink-600">
@@ -174,7 +197,7 @@
       </div>
     </section>
 
-    <!-- STEP 2 -->
+    <!-- STEP 2 (Uploads + Dimensions) -->
     <section id="step-2" class="mb-12 hidden">
       <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
         <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-8 text-white text-center">
@@ -184,6 +207,7 @@
 
         <div class="p-8 md:p-12">
           <div class="max-w-4xl mx-auto space-y-10">
+
             <!-- Upload -->
             <div class="text-center border-2 border-dashed border-blue-300 rounded-3xl p-10 bg-gradient-to-br from-blue-50 to-indigo-50 card-hover">
               <div class="w-24 h-24 mx-auto mb-6 rounded-2xl shadow-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center float">
@@ -193,9 +217,12 @@
               </div>
               <h3 class="text-2xl font-bold text-gray-800 mb-2">Upload Floor Plans & Photos</h3>
               <p class="text-gray-600 mb-5">Drag and drop your files or click to browse</p>
+
               <input id="files" type="file" class="hidden" multiple accept="image/*,.pdf,.dwg,.dxf" />
-              <button onclick="document.getElementById('files').click()" class="px-6 py-3 rounded-xl text-white font-bold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">Select Files</button>
-              <p class="text-sm text-gray-500 mt-3">Supported: JPG, PNG, PDF, DWG, DXF (Max 10MB each)</p>
+              <button id="btn-pick" class="px-6 py-3 rounded-xl text-white font-bold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">Select Files</button>
+              <p class="text-sm text-gray-500 mt-3">
+                Supported: JPG, PNG, PDF, DWG, DXF (Max 10MB each)
+              </p>
             </div>
 
             <div id="uploaded-wrap" class="hidden">
@@ -234,9 +261,23 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Optional notes -->
+              <div class="mt-6">
+                <label class="block font-semibold text-gray-700 mb-2">Notes (optional)</label>
+                <textarea id="notes" rows="3" placeholder="Any extra notes or constraints…" class="w-full p-4 rounded-xl border-2 border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-inner"></textarea>
+              </div>
             </div>
 
-            <div class="text-center">
+            <!-- Actions -->
+            <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+              <button id="btn-send-all" class="px-8 py-4 text-lg rounded-2xl text-white font-bold shadow-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700">
+                Send All to n8n (Audio + As-Built + Dimensions)
+              </button>
+              <span id="send-status" class="text-sm text-slate-600"></span>
+            </div>
+
+            <div class="text-center pt-4">
               <button id="btn-next2" class="px-8 py-4 text-2xl rounded-2xl text-white font-bold shadow-2xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">Generate AI Designs</button>
             </div>
           </div>
@@ -244,7 +285,7 @@
       </div>
     </section>
 
-    <!-- STEP 3 -->
+    <!-- STEP 3 (Proposals) -->
     <section id="step-3" class="hidden">
       <div id="loading" class="bg-white rounded-3xl shadow-2xl p-12 text-center">
         <div class="max-w-2xl mx-auto">
@@ -286,13 +327,15 @@
   <!-- SCRIPT -->
   <script>
     /* ===== 1) n8n Webhook ===== */
-    const N8N_WEBHOOK_URL = "https://plansee.app.n8n.cloud/webhook/958b5b14-1f45-4701-839e-16f392138f8d"; // بدّليه لو عندك URL مختلف
+    // غيّري الـ URL لو عندك رابط مختلف
+    const N8N_WEBHOOK_URL = "https://plansee.app.n8n.cloud/webhook/958b5b14-1f45-4701-839e-16f392138f8d";
 
     async function sendToN8N(action, data, filesFormData){
       try{
         if(filesFormData){
           filesFormData.append("action", action);
           filesFormData.append("origin", location.origin);
+          filesFormData.append("ua", navigator.userAgent);
           const res = await fetch(N8N_WEBHOOK_URL, { method:"POST", body: filesFormData });
           return await res.text();
         }
@@ -304,6 +347,7 @@
         return await res.text();
       }catch(e){
         console.warn("n8n error:", e);
+        throw e;
       }
     }
 
@@ -337,7 +381,7 @@
     const timeEl = document.getElementById("timer");
     const finalDurationEl = document.getElementById("finalDuration");
 
-    let mediaRecorder, audioChunks = [], tInt, startedAt = 0, audioBlob, audioUrl, audioEl;
+    let mediaRecorder, audioChunks = [], tInt, startedAt = 0, audioBlob = null, audioUrl = "", audioEl;
 
     function fmt(sec){ const m=Math.floor(sec/60), s=sec%60; return `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`; }
     function pickSupportedMime(){
@@ -347,7 +391,7 @@
         'audio/ogg;codecs=opus',
         'audio/mp4'
       ];
-      return list.find(t => MediaRecorder.isTypeSupported(t)) || '';
+      return list.find(t => window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) || '';
     }
 
     async function startRecording(){
@@ -363,9 +407,10 @@
           audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
           audioUrl = URL.createObjectURL(audioBlob);
 
+          // بعت مجرد إشعار إن فيه Audio جاهز (مش لازم نبعته هنا)
           const fd = new FormData();
-          fd.append("audio", audioBlob, "interview.webm");
-          await sendToN8N("interview_audio", {}, fd);
+          fd.append("has_audio", "true");
+          await sendToN8N("interview_audio_ready", {}, fd);
         };
 
         mediaRecorder.start();
@@ -385,7 +430,6 @@
         await sendToN8N("interview_start",{ ts:new Date().toISOString() });
 
       }catch(err){
-        // أهم الأخطاء: NotFoundError / NotAllowedError / AbortError
         alert("Mic error: " + (err && err.message ? err.message : "Requested device not found"));
         simulateRecording();
       }
@@ -416,7 +460,6 @@
         timeEl.textContent = fmt(sec);
         if(sec>=5){ stopRecording(); clearInterval(tInt); }
       }, 1000);
-      // نبعث إشعار للنود إننا شغّالين على محاكاة
       sendToN8N("interview_simulated",{ reason:"no_mic_or_permission" });
     }
 
@@ -426,6 +469,8 @@
     });
 
     document.getElementById("btn-rerecord").addEventListener("click", ()=>{
+      audioBlob = null;
+      audioUrl = "";
       interviewDone.classList.add("hidden");
       interviewReady.classList.remove("hidden");
       btnRecord.classList.remove("hidden");
@@ -437,7 +482,7 @@
     });
 
     document.getElementById("btn-play").addEventListener("click", ()=>{
-      if(!audioUrl){ alert("This is a demo: recording preview will play here when available."); return; }
+      if(!audioUrl){ alert("No recording yet."); return; }
       if(!audioEl){ audioEl = new Audio(audioUrl); }
       audioEl.play();
     });
@@ -458,10 +503,14 @@
     const filesInput = document.getElementById("files");
     const uploadedWrap = document.getElementById("uploaded-wrap");
     const filesList = document.getElementById("files-list");
+    const pickBtn = document.getElementById("btn-pick");
+    pickBtn.addEventListener("click", ()=> filesInput.click());
 
+    let lastPickedFiles = [];
     filesInput.addEventListener("change", async (e)=>{
       const files = Array.from(e.target.files||[]);
       if(!files.length) return;
+      lastPickedFiles = files;
 
       uploadedWrap.classList.remove("hidden");
       filesList.innerHTML = "";
@@ -476,13 +525,60 @@
           </span>
           <div><p class="font-medium text-gray-800">${f.name}</p><p class="text-sm text-gray-500">${(f.size/1024/1024).toFixed(2)} MB</p></div>
         </div>
-        <span class="text-emerald-600 font-semibold">Queued</span>`;
+        <span class="text-emerald-600 font-semibold badge">Queued</span>`;
         filesList.appendChild(row);
         fd.append("file_"+idx, f, f.name);
       });
 
-      await sendToN8N("survey_files", {}, fd);
-      filesList.querySelectorAll("span.text-emerald-600").forEach(s=>s.textContent="Uploaded");
+      await sendToN8N("survey_files_queued", {}, fd);
+      filesList.querySelectorAll(".badge").forEach(b=> b.textContent="Ready");
+    });
+
+    // زر إرسال كل حاجة مرة واحدة
+    document.getElementById("btn-send-all").addEventListener("click", async ()=>{
+      const status = document.getElementById("send-status");
+      try{
+        const dims = {
+          length: parseFloat(document.getElementById("dim-length").value||0),
+          width : parseFloat(document.getElementById("dim-width").value||0),
+          height: parseFloat(document.getElementById("dim-height").value||0),
+        };
+        const meta = {
+          client_name: (document.getElementById("meta-name").value||"").trim(),
+          contact: (document.getElementById("meta-contact").value||"").trim(),
+          project_id: (document.getElementById("meta-project").value||"").trim(),
+          notes: (document.getElementById("notes").value||"").trim(),
+        };
+
+        const fd = new FormData();
+        // أبعاد وميتا كـ JSON strings
+        fd.append("dimensions_json", JSON.stringify(dims));
+        fd.append("meta_json", JSON.stringify(meta));
+
+        // ملفات As-Built
+        (lastPickedFiles||[]).forEach((f,idx)=> fd.append("asbuilt_"+idx, f, f.name));
+
+        // الصوت لو موجود
+        if(audioBlob){
+          const audioName = (meta.project_id ? meta.project_id + "_" : "") + "interview.webm";
+          fd.append("audio", audioBlob, audioName);
+          fd.append("audio_mime", audioBlob.type || "audio/webm");
+        }else{
+          fd.append("audio", "");
+        }
+
+        status.textContent = "Uploading…";
+        const resText = await sendToN8N("submit_all", {}, fd);
+        status.textContent = "Sent ✔";
+        // ممكن تعرضي اللوج من النود
+        console.log("n8n submit_all response:", resText);
+        // تعليمات بسيطة للي UI:
+        filesList.querySelectorAll(".badge").forEach(b=> { b.textContent="Uploaded"; b.classList.add("bg-emerald-100","text-emerald-700"); });
+      }catch(err){
+        status.textContent = "Failed to send ❌";
+        console.error(err);
+        alert("Sending failed. Check console and n8n run.");
+      }
     });
 
     document.getElementById("btn-next2").addEventListener("click", async ()=>{
@@ -496,10 +592,10 @@
       setStep(3);
       document.getElementById("loading").classList.remove("hidden");
       document.getElementById("proposals").classList.add("hidden");
-      setTimeout(()=>{ showProposals(); }, 2000);
+      setTimeout(()=>{ showProposals(); }, 1800);
     });
 
-    /* ===== 5) Proposals ===== */
+    /* ===== 5) Proposals (UI Demo) ===== */
     const grid = document.getElementById("grid");
     function showProposals(){
       document.getElementById("loading").classList.add("hidden");
@@ -557,7 +653,7 @@
       document.getElementById("loading").classList.remove("hidden");
       document.getElementById("proposals").classList.add("hidden");
       await sendToN8N("regenerate",{});
-      setTimeout(()=>showProposals(), 1600);
+      setTimeout(()=>showProposals(), 1400);
     });
 
     document.getElementById("btn-download").addEventListener("click", async (e)=>{
@@ -570,9 +666,10 @@
         btn.innerHTML = old;
         btn.disabled = false;
         alert("PDF is prepared (demo).");
-      }, 1500);
+      }, 1200);
     });
 
+    // Start at step 1
     setStep(1);
   </script>
 </body>
