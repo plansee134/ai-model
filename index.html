@@ -382,7 +382,7 @@
         console.log('Sending to n8n, action:', action);
         
         if (filesFormData) {
-          // FormData - زي الكود القديم اللي كان شغال
+          // FormData
           filesFormData.append("action", action);
           filesFormData.append("origin", location.origin);
           filesFormData.append("ua", navigator.userAgent);
@@ -395,7 +395,6 @@
           const responseText = await response.text();
           console.log('n8n response (text):', responseText);
           
-          // حاول Parse كـ JSON لو ممكن
           try {
             return JSON.parse(responseText);
           } catch {
@@ -494,7 +493,6 @@
         };
 
         mediaRecorder.onstop = () => {
-          // Stop all tracks
           stream.getTracks().forEach(track => track.stop());
           
           appState.audioBlob = new Blob(audioChunks, { 
@@ -505,7 +503,7 @@
           console.log('Recording completed, size:', appState.audioBlob.size);
         };
 
-        mediaRecorder.start(1000); // Collect data every second
+        mediaRecorder.start(1000);
 
         // UI updates
         recordingStartTime = Date.now();
@@ -520,13 +518,11 @@
           </span>
         `;
 
-        // Update timer
         recordingTimer = setInterval(() => {
           const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
           document.getElementById('timer').textContent = formatTime(elapsed);
         }, 1000);
 
-        // Send start event
         await sendToN8N("interview_start", { ts: new Date().toISOString() });
 
       } catch (error) {
@@ -551,7 +547,6 @@
       document.getElementById('rings').classList.add('hidden');
       document.getElementById('btn-record').classList.add('hidden');
 
-      // Send stop event
       sendToN8N("interview_stop", { duration_sec: duration });
     }
 
@@ -589,7 +584,6 @@
           filesList.appendChild(fileElement);
         });
 
-        // Send files queued event
         const fd = new FormData();
         files.forEach((f, idx) => {
           fd.append("file_" + idx, f, f.name);
@@ -602,7 +596,6 @@
     function prepareFormData() {
       const formData = new FormData();
       
-      // Add metadata - زي الكود القديم بالظبط
       const metadata = {
         client_name: document.getElementById('meta-name').value.trim(),
         contact: document.getElementById('meta-contact').value.trim(),
@@ -611,7 +604,6 @@
       };
       formData.append('meta_json', JSON.stringify(metadata));
       
-      // Add dimensions - زي الكود القديم بالظبط
       const dimensions = {
         length: parseFloat(document.getElementById('dim-length').value) || 0,
         width: parseFloat(document.getElementById('dim-width').value) || 0,
@@ -619,7 +611,6 @@
       };
       formData.append('dimensions_json', JSON.stringify(dimensions));
       
-      // Add audio file - زي الكود القديم بالظبط
       if (appState.audioBlob) {
         const audioName = (metadata.project_id ? metadata.project_id + "_" : "") + "interview.webm";
         formData.append('audio', appState.audioBlob, audioName);
@@ -628,7 +619,6 @@
         formData.append('audio', '');
       }
       
-      // Add uploaded files - زي الكود القديم بالظبط
       appState.uploadedFiles.forEach((file, index) => {
         formData.append('asbuilt_' + index, file, file.name);
       });
@@ -636,7 +626,6 @@
       return formData;
     }
 
-    // زر إرسال كل البيانات
     document.getElementById('btn-send-all').addEventListener('click', async () => {
       const statusElement = document.getElementById('send-status');
       statusElement.textContent = 'Uploading…';
@@ -648,7 +637,6 @@
         statusElement.textContent = 'Data sent successfully! ✓';
         console.log('Submit all response:', response);
         
-        // Update file status
         document.querySelectorAll('#files-list .badge').forEach(badge => {
           badge.textContent = 'Uploaded';
           badge.classList.add('bg-emerald-100', 'text-emerald-700');
@@ -660,11 +648,34 @@
       }
     });
 
+    // ===== HELPER FUNCTIONS FOR DATA URI =====
+    function dataUriToBlob(dataUri) {
+      const parts = dataUri.split(',');
+      const mime = parts[0].match(/:(.*?);/)[1];
+      const bstr = atob(parts[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new Blob([u8arr], { type: mime });
+    }
+
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
     // ===== PROPOSAL GENERATION =====
     async function generateProposal() {
       const formData = prepareFormData();
       
-      // Show loading state
       setStep(3);
       document.getElementById('loading').classList.remove('hidden');
       document.getElementById('proposal-wrap').classList.add('hidden');
@@ -673,14 +684,12 @@
         const response = await sendToN8N("submit_all", {}, formData);
         console.log('Generation response:', response);
         
-        // Hide loading and show proposal
         document.getElementById('loading').classList.add('hidden');
         document.getElementById('proposal-wrap').classList.remove('hidden');
         
         if (response && response.ok !== false) {
           displayProposal(response);
         } else {
-          // If no response data, show demo data
           displayDemoProposal();
         }
       } catch (error) {
@@ -692,6 +701,9 @@
     }
 
     function displayProposal(data) {
+      // Store response data
+      appState.proposalData = data;
+      
       // Update metadata
       if (data.metaSummary) {
         document.getElementById('out-client').textContent = data.metaSummary.client || '—';
@@ -700,14 +712,14 @@
       }
       
       // Update dimensions
-      if (data.dimensions_summary) {
-        document.getElementById('dim-out-length').textContent = data.dimensions?.length || '—';
-        document.getElementById('dim-out-width').textContent = data.dimensions?.width || '—';
-        document.getElementById('dim-out-height').textContent = data.dimensions?.height || '—';
+      if (data.dimensions) {
+        document.getElementById('dim-out-length').textContent = data.dimensions.length || '—';
+        document.getElementById('dim-out-width').textContent = data.dimensions.width || '—';
+        document.getElementById('dim-out-height').textContent = data.dimensions.height || '—';
       }
       
-      // Update image
-      if (data.image && data.image.url) {
+      // Update image - handle both data_uri and url
+      if (data.image && (data.image.data_uri || data.image.url)) {
         const imgElement = document.getElementById('proposal-img');
         const skeleton = document.getElementById('img-skeleton');
         
@@ -721,7 +733,8 @@
           imgElement.classList.add('hidden');
         };
         
-        imgElement.src = data.image.url;
+        // Prioritize data_uri, fallback to url
+        imgElement.src = data.image.data_uri || data.image.url;
       }
       
       // Update notes and title
@@ -732,8 +745,8 @@
         document.getElementById('proposal-title').textContent = 'AI Floorplan Proposal';
       }
       
-      // Enable download button
-      document.getElementById('btn-download').disabled = !(data.image && data.image.url);
+      // Enable download button if image exists
+      document.getElementById('btn-download').disabled = !(data.image && (data.image.data_uri || data.image.url));
       
       // Update status
       document.getElementById('status-badge').textContent = 'done';
@@ -741,7 +754,6 @@
     }
 
     function displayDemoProposal() {
-      // Show demo data when no real response
       const metadata = {
         client_name: document.getElementById('meta-name').value.trim() || 'Ahmed Abbas',
         contact: document.getElementById('meta-contact').value.trim() || 'ahmed@domain.com',
@@ -808,7 +820,6 @@
 
     document.getElementById('btn-next1').addEventListener('click', () => {
       setStep(2);
-      // Auto-fill sample dimensions
       ['dim-length', 'dim-width', 'dim-height'].forEach((id, index) => {
         const values = [4.5, 3.2, 2.8];
         const element = document.getElementById(id);
@@ -817,7 +828,6 @@
         setTimeout(() => element.classList.remove('bg-green-50'), 1000);
       });
       
-      // Send navigation event
       sendToN8N("go_to_survey", {});
     });
 
@@ -826,22 +836,4 @@
     document.getElementById('btn-regenerate').addEventListener('click', generateProposal);
 
     document.getElementById('btn-download').addEventListener('click', () => {
-      if (appState.proposalData?.image?.url) {
-        window.open(appState.proposalData.image.url, '_blank');
-      } else {
-        alert('No image available to download.');
-      }
-    });
-
-    // ===== INITIALIZATION =====
-    setStep(1);
-
-    // Debug helper
-    window.debugState = () => {
-      console.log('App State:', appState);
-      console.log('Audio Blob:', appState.audioBlob);
-      console.log('Uploaded Files:', appState.uploadedFiles);
-    };
-  </script>
-</body>
-</html>
+      if (appState.proposalData?.image) {
