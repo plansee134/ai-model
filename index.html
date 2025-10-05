@@ -692,53 +692,55 @@
     }
 
     function displayProposal(data) {
-      // Update metadata
-      if (data.metaSummary) {
-        document.getElementById('out-client').textContent = data.metaSummary.client || '—';
-        document.getElementById('out-contact').textContent = data.metaSummary.contact || '—';
-        document.getElementById('out-project').textContent = data.metaSummary.project || '—';
-      }
-      
-      // Update dimensions
-      if (data.dimensions_summary) {
-        document.getElementById('dim-out-length').textContent = data.dimensions?.length || '—';
-        document.getElementById('dim-out-width').textContent = data.dimensions?.width || '—';
-        document.getElementById('dim-out-height').textContent = data.dimensions?.height || '—';
-      }
-      
-      // Update image
-      if (data.image && data.image.url) {
-        const imgElement = document.getElementById('proposal-img');
-        const skeleton = document.getElementById('img-skeleton');
-        
-        imgElement.onload = () => {
-          skeleton.classList.add('hidden');
-          imgElement.classList.remove('hidden');
-        };
-        
-        imgElement.onerror = () => {
-          skeleton.classList.remove('hidden');
-          imgElement.classList.add('hidden');
-        };
-        
-        imgElement.src = data.image.url;
-      }
-      
-      // Update notes and title
-      if (data.note) {
-        document.getElementById('proposal-notes').textContent = data.note;
-      }
-      if (data.type === 'proposal_generated') {
-        document.getElementById('proposal-title').textContent = 'AI Floorplan Proposal';
-      }
-      
-      // Enable download button
-      document.getElementById('btn-download').disabled = !(data.image && data.image.url);
-      
-      // Update status
-      document.getElementById('status-badge').textContent = 'done';
-      document.getElementById('status-badge').className = 'px-2 py-0.5 bg-emerald-200 text-emerald-900 rounded-md';
-    }
+  // Keep data for download button and debugging
+  appState.proposalData = data;
+
+  // Metadata (unchanged)
+  if (data.metaSummary) {
+    document.getElementById('out-client').textContent  = data.metaSummary.client  || '—';
+    document.getElementById('out-contact').textContent = data.metaSummary.contact || '—';
+    document.getElementById('out-project').textContent = data.metaSummary.project || '—';
+  }
+
+  // Dimensions if returned as object (unchanged)
+  if (data.dimensions) {
+    document.getElementById('dim-out-length').textContent = data.dimensions.length || '—';
+    document.getElementById('dim-out-width').textContent  = data.dimensions.width  || '—';
+    document.getElementById('dim-out-height').textContent = data.dimensions.height || '—';
+  } else if (data.dimensions_summary) {
+    // keep your current behavior if you depend on dimensions_summary text
+    document.getElementById('dim-out-length').textContent = data.dimensions?.length || '—';
+    document.getElementById('dim-out-width').textContent  = data.dimensions?.width  || '—';
+    document.getElementById('dim-out-height').textContent = data.dimensions?.height || '—';
+  }
+
+  // Image source: prefer data_uri then url
+  const imgSrc = data?.image?.data_uri || data?.image?.url || null;
+  const imgElement = document.getElementById('proposal-img');
+  const skeleton   = document.getElementById('img-skeleton');
+
+  if (imgSrc) {
+    imgElement.onload  = () => { skeleton.classList.add('hidden'); imgElement.classList.remove('hidden'); };
+    imgElement.onerror = () => { skeleton.classList.remove('hidden'); imgElement.classList.add('hidden'); };
+    imgElement.src = imgSrc;
+  } else {
+    skeleton.classList.remove('hidden');
+    imgElement.classList.add('hidden');
+  }
+
+  if (data.note) document.getElementById('proposal-notes').textContent = data.note;
+  if (data.type === 'proposal_generated') {
+    document.getElementById('proposal-title').textContent = 'AI Floorplan Proposal';
+  }
+
+  // Enable download if we have either data_uri or url
+  document.getElementById('btn-download').disabled = !imgSrc;
+
+  // Status (unchanged)
+  document.getElementById('status-badge').textContent = 'done';
+  document.getElementById('status-badge').className = 'px-2 py-0.5 bg-emerald-200 text-emerald-900 rounded-md';
+}
+
 
     function displayDemoProposal() {
       // Show demo data when no real response
@@ -826,12 +828,19 @@
     document.getElementById('btn-regenerate').addEventListener('click', generateProposal);
 
     document.getElementById('btn-download').addEventListener('click', () => {
-      if (appState.proposalData?.image?.url) {
-        window.open(appState.proposalData.image.url, '_blank');
-      } else {
-        alert('No image available to download.');
-      }
-    });
+  const d = appState.proposalData;
+  if (!d || !d.image) return alert('No image available to download.');
+
+  if (d.image.data_uri) {
+    const blob = dataUriToBlob(d.image.data_uri);
+    downloadBlob(blob, 'floorplan.png');
+  } else if (d.image.url) {
+    window.open(d.image.url, '_blank');
+  } else {
+    alert('No image available to download.');
+  }
+});
+
 
     // ===== INITIALIZATION =====
     setStep(1);
